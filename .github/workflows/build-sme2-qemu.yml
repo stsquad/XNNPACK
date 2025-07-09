@@ -57,16 +57,16 @@ jobs:
           CXX: clang++-20
         run: |
           mkdir -p bin
-          wget -Snv https://gitlab.com/rth7680/qemu/-/archive/tgt-arm-sme2-afp/qemu-tgt-arm-sme2-afp.tar.bz2
-          if [ ! -f qemu-tgt-arm-sme2-afp.tar.bz2.sha256 ] || [[ $(sha256sum -c qemu-tgt-arm-sme2-afp.tar.bz2.sha256) && $? -eq 1 ]]; then
+          wget -Snv https://gitlab.com/qemu-project/qemu/-/archive/master/qemu-master.tar.bz2
+          if [ ! -f qemu-master.tar.bz2.sha256 ] || [[ $(sha256sum -c qemu-master.tar.bz2.sha256) && $? -eq 1 ]]; then
             echo " "
             echo "Rebuilding qemu-arch64 from latest commit!"
             echo " "
             echo "save=true" >> "$GITHUB_OUTPUT"
-            sha256sum qemu-tgt-arm-sme2-afp.tar.bz2 > qemu-tgt-arm-sme2-afp.tar.bz2.sha256
+            sha256sum qemu-master.tar.bz2 > qemu-master.tar.bz2.sha256
             sudo apt-get install libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build
-            tar xjf qemu-tgt-arm-sme2-afp.tar.bz2
-            cd qemu-tgt-arm-sme2-afp
+            tar xjf qemu-master.tar.bz2
+            cd qemu-master
             ./configure --target-list=aarch64-linux-user
             make -j $(nproc)
             cp -f build/qemu-aarch64 ../bin/
@@ -79,7 +79,7 @@ jobs:
         with:
           path: |
             ${{ github.workspace }}/bin/qemu-aarch64
-            ${{ github.workspace }}/qemu-tgt-arm-sme2-afp.tar.bz2.sha256
+            ${{ github.workspace }}/qemu-master.tar.bz2.sha256
           key: ${{ runner.os }}-qemu-aarch64
       - name: Build and run microkernel tests
         continue-on-error: true
