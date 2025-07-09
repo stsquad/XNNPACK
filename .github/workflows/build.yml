@@ -621,11 +621,11 @@ jobs:
           CXX: clang++-20
         run: |
           mkdir -p bin
-          wget -Snv https://gitlab.com/rth7680/qemu/-/archive/tgt-arm-sme2-afp/qemu-tgt-arm-sme2-afp.tar.bz2
-          if [ ! -f bin/qemu-aarch64 ] || [ qemu-tgt-arm-sme2-afp.tar.bz2 -nt bin/qemu-aarch64 ]; then
+          wget -Snv https://gitlab.com/qemu-project/qemu/-/archive/master/qemu-master.tar.bz2
+          if [ ! -f bin/qemu-aarch64 ] || [ qemu-master.tar.bz2 -nt bin/qemu-aarch64 ]; then
             sudo apt-get install libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev ninja-build
-            tar xjf qemu-tgt-arm-sme2-afp.tar.bz2
-            cd qemu-tgt-arm-sme2-afp
+            tar xjf qemu-master.tar.bz2
+            cd qemu-master
             ./configure --target-list=aarch64-linux-user
             make -j $(nproc)
             cp build/qemu-aarch64 ../bin/
