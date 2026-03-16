@@ -13,6 +13,20 @@ on:
         default: false
         required: false
         type: boolean
+  workflow_dispatch:
+    branches:
+      - 'testing/*'
+    inputs:
+      run-tests:
+        description: 'Whether to also run unit tests, where possible.'
+        default: true
+        required: false
+        type: boolean
+      update-caches:
+        description: 'Whether to update the `ccache` or `bazel` caches, where possible.'
+        default: false
+        required: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}-${{ inputs.update-caches }}
@@ -601,7 +615,7 @@ jobs:
           find /home/xnnpack/.cache/bazel/disk_cache -type f -atime +7 -delete
 
   bazel-linux-aarch64-sme2-qemu:
-    runs-on: "arm-ubuntu-arm-22.04-8core"
+    runs-on: 'ubuntu-24.04-8core'
     timeout-minutes: 60
     container:
       image: ghcr.io/google/xnnpack/sme2:latest
