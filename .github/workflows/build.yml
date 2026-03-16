@@ -608,7 +608,7 @@ jobs:
     env:
       CC: clang-20
       CXX: clang++-20
-      QEMU_ARGS: -cpu max
+      QEMU_ARGS: -cpu max,pauth=off,sve-max-vq=4
     steps:
       - uses: actions/checkout@v6
 
