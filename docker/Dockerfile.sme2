@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y \
     bison
 
 WORKDIR /src
-RUN wget -nv https://download.qemu.org/qemu-9.2.2.tar.xz && tar xJf qemu-9.2.2.tar.xz
-WORKDIR /src/qemu-9.2.2
+RUN wget -nv https://download.qemu.org/qemu-10.2.1.tar.xz && tar xJf qemu-10.2.1.tar.xz
+WORKDIR /src/qemu-10.2.1
 RUN ./configure \
     --cc=clang \
     --cxx=clang++ \
