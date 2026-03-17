@@ -13,6 +13,33 @@ on:
         default: false
         required: false
         type: boolean
+      container-registry:
+        description: 'Container registry prefix (e.g., ghcr.io/google/xnnpack)'
+        default: 'ghcr.io/google/xnnpack'
+        required: false
+        type: string
+  workflow_dispatch:
+    inputs:
+      run-tests:
+        description: 'Whether to also run unit tests, where possible.'
+        default: true
+        required: false
+        type: boolean
+      update-caches:
+        description: 'Whether to update the `ccache` or `bazel` caches, where possible.'
+        default: false
+        required: false
+        type: boolean
+      job-filter:
+        description: 'Only run specific job(s) - comma-separated list (empty = all jobs)'
+        default: ''
+        required: false
+        type: string
+      container-registry:
+        description: 'Container registry prefix'
+        default: 'ghcr.io/google/xnnpack'
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}-${{ inputs.update-caches }}
@@ -20,10 +47,11 @@ concurrency:
 
 jobs:
   cmake-linux-x86_64:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-linux-x86_64') }}
     runs-on: 'ubuntu-24.04-8core'
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/standard:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/standard:latest
     env:
       CMAKE_C_COMPILER_LAUNCHER: ccache
       CMAKE_CXX_COMPILER_LAUNCHER: ccache
@@ -52,10 +80,11 @@ jobs:
         run: ccache -s
 
   cmake-linux-aarch64:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-linux-aarch64') }}
     runs-on: 'arm-ubuntu-arm-22.04-8core'
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/standard:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/standard:latest
     env:
       CMAKE_C_COMPILER_LAUNCHER: ccache
       CMAKE_CXX_COMPILER_LAUNCHER: ccache
@@ -84,10 +113,11 @@ jobs:
         run: ccache -s
 
   cmake-linux-armhf:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-linux-armhf') }}
     runs-on: arm-ubuntu-arm-22.04-8core
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/standard:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/standard:latest
     env:
       CMAKE_C_COMPILER_LAUNCHER: ccache
       CMAKE_CXX_COMPILER_LAUNCHER: ccache
@@ -120,10 +150,11 @@ jobs:
         run: ccache -s
 
   cmake-linux-riscv64:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-linux-riscv64') }}
     runs-on: 'ubuntu-24.04-16core'
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/riscv:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/riscv:latest
     env:
       CMAKE_C_COMPILER_LAUNCHER: ccache
       CMAKE_CXX_COMPILER_LAUNCHER: ccache
@@ -162,6 +193,7 @@ jobs:
         run: ccache -s
 
   cmake-windows-arm64:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-windows-arm64') }}
     runs-on: windows-2022-32core
     timeout-minutes: 60
     steps:
@@ -187,6 +219,7 @@ jobs:
           CXXFLAGS: "/UNDEBUG"
 
   cmake-windows-x64:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-windows-x64') }}
     runs-on: windows-2022-32core
     timeout-minutes: 60
     steps:
@@ -216,6 +249,7 @@ jobs:
         working-directory: ${{ github.workspace }}/build/windows/x64
 
   cmake-windows-x86:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-windows-x86') }}
     runs-on: windows-2022-32core
     timeout-minutes: 60
     steps:
@@ -245,6 +279,7 @@ jobs:
         working-directory: ${{ github.workspace }}/build/windows/x86
 
   cmake-macos-arm64:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-macos-arm64') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -278,13 +313,14 @@ jobs:
         working-directory: ${{ github.workspace }}
 
   cmake-android:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-android') }}
     strategy:
       matrix:
         arch: [arm64, armv7, x86]
     runs-on: 'ubuntu-24.04-8core'
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/android:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/android:latest
     env:
       CMAKE_C_COMPILER_LAUNCHER: ccache
       CMAKE_CXX_COMPILER_LAUNCHER: ccache
@@ -312,6 +348,7 @@ jobs:
         run: ccache -s
 
   cmake-ios-arm64:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'cmake-ios-arm64') }}
     runs-on: macos-latest
     timeout-minutes: 60
     steps:
@@ -327,6 +364,7 @@ jobs:
         working-directory: ${{ github.workspace }}
 
   gn-linux-x86_64:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'gn-linux-x86_64') }}
     runs-on: 'ubuntu-24.04-8core'
     timeout-minutes: 15
     steps:
@@ -366,10 +404,11 @@ jobs:
         working-directory: ${{ github.workspace }}/xnnpack
 
   bazel-linux-x86_64-clang-18:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'bazel-linux-x86_64-clang-18') }}
     runs-on: 'ubuntu-24.04-8core'
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/standard:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/standard:latest
     env:
       CC: clang-18
       CXX: clang++-18
@@ -419,10 +458,11 @@ jobs:
           find /home/xnnpack/.cache/bazel/disk_cache -type f -atime +7 -delete
 
   bazel-linux-x86_64-gcc-9:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'bazel-linux-x86_64-gcc-9') }}
     runs-on: 'ubuntu-24.04-8core'
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/standard:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/standard:latest
     env:
       CC: gcc-9
       CXX: g++-9
@@ -487,10 +527,11 @@ jobs:
           find /home/xnnpack/.cache/bazel/disk_cache -type f -atime +7 -delete
 
   bazel-linux-aarch64-clang18:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'bazel-linux-aarch64-clang18') }}
     runs-on: 'arm-ubuntu-arm-22.04-8core'
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/standard:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/standard:latest
     env:
       CC: clang-18
       CXX: clang++-18
@@ -542,10 +583,11 @@ jobs:
 
   bazel-linux-aarch64-gcc13:
     # This ensures we have solid test coverage for _Float16
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'bazel-linux-aarch64-gcc13') }}
     runs-on: 'arm-ubuntu-arm-22.04-8core'
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/standard:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/standard:latest
     env:
       CC: gcc-13
       CXX: g++-13
@@ -601,10 +643,11 @@ jobs:
           find /home/xnnpack/.cache/bazel/disk_cache -type f -atime +7 -delete
 
   bazel-linux-aarch64-sme2-qemu:
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'sme2') }}
     runs-on: "arm-ubuntu-arm-22.04-8core"
     timeout-minutes: 60
     container:
-      image: ghcr.io/google/xnnpack/sme2:latest
+      image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/sme2:latest
     env:
       CC: clang-20
       CXX: clang++-20
