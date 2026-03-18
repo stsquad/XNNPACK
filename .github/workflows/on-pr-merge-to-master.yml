@@ -5,6 +5,12 @@ on:
     paths-ignore:
       - 'docker/**'
   workflow_dispatch:
+    inputs:
+      job-filter:
+        description: 'Only run specific job(s) - comma-separated list (empty = all jobs)'
+        default: ''
+        required: false
+        type: string
 
 jobs:
   build-and-test:
@@ -12,3 +18,4 @@ jobs:
     with:
       run-tests: false
       update-caches: true
+      job-filter: ${{ inputs.job-filter || '' }}

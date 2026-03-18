@@ -18,6 +18,11 @@ on:
         default: 'ghcr.io/google/xnnpack'
         required: false
         type: string
+      job-filter:
+        description: 'Only run specific job(s) - comma-separated list (empty = all jobs)'
+        default: ''
+        required: false
+        type: string
   workflow_dispatch:
     inputs:
       run-tests:
@@ -643,8 +648,8 @@ jobs:
           find /home/xnnpack/.cache/bazel/disk_cache -type f -atime +7 -delete
 
   bazel-linux-aarch64-sme2-qemu:
-    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'sme2') }}
-    runs-on: 'ubuntu24.04-arm64'
+    if: ${{ inputs.job-filter == '' || contains(inputs.job-filter, 'sme') }}
+    runs-on: [self-hosted, Linux, ARM64]
     timeout-minutes: 60
     container:
       image: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}/sme2:latest

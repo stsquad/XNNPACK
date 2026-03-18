@@ -5,7 +5,33 @@ on:
     branches-ignore:
       - master
   workflow_dispatch:
+    inputs:
+      run-tests:
+        description: 'Whether to also run unit tests, where possible.'
+        default: true
+        required: false
+        type: boolean
+      update-caches:
+        description: 'Whether to update the `ccache` or `bazel` caches, where possible.'
+        default: false
+        required: false
+        type: boolean
+      job-filter:
+        description: 'Only run specific job(s) - comma-separated list (empty = all jobs)'
+        default: ''
+        required: false
+        type: string
+      container-registry:
+        description: 'Container registry prefix'
+        default: 'ghcr.io/google/xnnpack'
+        required: false
+        type: string
 
 jobs:
   build-and-test:
     uses: ./.github/workflows/build.yml
+    with:
+      run-tests: ${{ inputs.run-tests || true }}
+      update-caches: ${{ inputs.update-caches || false }}
+      job-filter: ${{ inputs.job-filter || '' }}
+      container-registry: ${{ inputs.container-registry || 'ghcr.io/google/xnnpack' }}
